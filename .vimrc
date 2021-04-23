@@ -9,7 +9,7 @@ if filereadable("/etc/vim/vimrc.local")
 endif
 
 set number
-set relative number
+set relativenumber
 set mouse=a
 syntax on
 set autoindent
