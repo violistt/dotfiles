@@ -5,8 +5,8 @@ snippet temp "Template"
 import sys
 input = sys.stdin.readline
 
-for test in range(int(input())):
-	n = int(input())
-	a = [int(i) for i in input().split()]
-
+t = int(input())
+for _ in range(t):
+    n = int(input())
+    a = list(map(int, input()))
 endsnippet
