@@ -1,5 +1,4 @@
 set rnu
-set relativenumber
 set mouse=a
 syntax on
 set autoindent
