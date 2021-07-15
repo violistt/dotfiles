@@ -1,0 +1,4 @@
+~/.config/regolith/i3/config/ # Main config file of i3wm
+~/.config/regolith/i3xrocks/conf.d # i3 status indicators # items
+~/.config/regolith/Xresources # i3 gaps (size, etc.)
+~/.i3status.conf # i3 status config
