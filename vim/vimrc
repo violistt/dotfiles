@@ -19,5 +19,6 @@ colorscheme gruvbox
 call plug#begin()
 
 Plug 'SirVer/ultisnips'
+Plug 'vim-airline/vim-airline'
 
 call plug#end()
