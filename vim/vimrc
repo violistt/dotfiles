@@ -1,3 +1,4 @@
+
 "        _       _ _     _   
 " __   _(_) ___ | (_)___| |_ 
 " \ \ / / |/ _ \| | / __| __|
@@ -16,10 +17,10 @@ set nowritebackup
 set nobackup
 set noundofile
 filetype plugin on
-nmap <F9> <Esc> :w <CR> :!clear; python3 % <CR>
-"autocmd vimEnter *.cpp map <F8> :w <CR> :!clear ; g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
-"nmap <F8> <Esc>:w<CR> :!clear; g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
-autocmd vimEnter *.cpp map <F8> :w <CR> :vertical terminal ++shell ++cols=40 g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
+nmap <F9> <Esc>:w<CR>:!clear;python3 %<CR>
+autocmd vimEnter *.cpp map <F8> :w <CR> :!clear ; g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
+"autocmd vimEnter *.cpp map <F8> :w <CR> :vertical terminal ++shell ++cols=40 g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
+inoremap { {<CR>}<Esc>ko
 set bg=dark
 colorscheme desert
 
