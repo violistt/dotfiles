@@ -1,0 +1,209 @@
+snippet temp "Template"
+#  author:  violist
+#  created: `date +%d.%m.%Y" "%R:%S`
+
+import sys
+input = sys.stdin.readline
+
+$0
+endsnippet
+
+snippet many
+t = int(input())
+for _ in range(t):
+    $0
+endsnippet
+
+snippet map
+map(int, input().split())
+endsnippet
+
+snippet list
+list(map(int, input().split()))
+endsnippet
+
+snippet for
+for i in range(${1}):
+endsnippet
+
+# ----- Algorithms ----- #
+
+snippet dij "Dijkstra"
+def dijstra(graph, weight, source = 0, target = None):
+    n = len(graph)
+    assert all(weight[u][v] >= 0 for u in range(n) for v in graph[u])
+    prec = [None] * n
+    black = [False] * n
+    dist = [float('inf')] * n
+    dist[source] = 0
+    while (heap):
+        dist_node, node = heappop(heap)
+        if (not black[node]):
+            black[node] = True
+            if (node == target):
+                break
+            for neighbor in graph[node]:
+                dist_neighbor = dist_node + weight[node][neighbor]
+                if (dist_neighbor < dist[neighbor]):
+                    dist[neighbor] = dist_deighbor
+                    prec[neighbor] = node
+                    heappush(heap, (dist_neighbor, neighbor))
+    return dist, prec
+endsnippet
+
+snippet bs "Binary_search"
+def binary_search(a, target):
+    n = len(a)
+    left = 0
+    right = n - 1
+    while (left <= right):
+        mid = left + (right - left) // 2
+        if (a[mid] == target):
+            return mid
+        if (a[mid] < target):
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+endsnippet
+
+snippet	lower_bound "Binary_search_lower_bound"
+def lower_bound(a, target):
+    n = len(a)
+    left = 0
+    right = n - 1
+    ans = -1
+    while (left <= right):
+        mid = left + (right - left) // 2
+        if (a[mid] >= target):
+            ans = mid
+            right = mid - 1
+        else:
+            left = mid + 1
+    return ans
+endsnippet
+
+snippet upper_bound "Binaray_search_upper_bound"
+def upper_bound(a, target):
+    n = len(a)
+    left = 0
+    right = n - 1
+    ans = -1
+    while (left <= right):
+        mid = left + (right - left) // 2
+        if (a[mid] > target):
+            ans = mid
+            right = mid - 1
+        else:
+            left = mid + 1
+    return ans
+endsnippet
+
+snippet prefix_sum "Prefix_sum"
+def prefix_sum(a):
+    res = [sum(a[:i + 1]) for i in range(len(a))]
+    return res
+endsnippet
+
+snippet LIS "Longest_increasing_subsequence"
+
+from bisect import bisect_left
+
+def solve(a):
+    n = len(a)
+    p = [None] * n
+    h = [None]
+    b = [float('-inf')]
+    for i in range(n):
+        if (a[i] > b[-1]):
+            p[i] = h[-1]
+            h.append(i)
+            b.append(a[i])
+        else:
+            k = bisect_left(b, a[i])
+            h[k] = i
+            b[k] = a[i]
+            p[i] = h[k - 1]
+    q = h[-1]
+    s = []
+    while (q is not None):
+        s.append(a[q])
+        q = p[q]
+    return s[::-1]
+endsnippet
+
+snippet dfs "Depth_first_search"
+def dfs(graph, start, seen):
+    seen[start] = True
+    to_visit = [start]
+    while (to_visit):
+        node = to_visit.pop()
+        for neighbour in graph[node]:
+            if (not seen[neighbor]):
+            seen[neighbor] = True
+            to_visit.append(neighbor)
+endsnippet
+
+snippet bfs "Breadth_first_search"
+from collections import deque
+
+def bfs(graph, start = 0):
+    to_visit = deque()
+    dist = [float('inf')] * len(graph)
+    prec = [None] * len(graph)
+    dist[start] = 0
+    to_visit.appendleft(start)
+    while (to_visit):
+        node = to_visit.pop()
+        for neighbor in graph[node]:
+            if (dist[neighbor] == float('inf')):
+                dist[neighbor] = dist[node] + 1
+                prec[neighbor] = node
+                to_visit.appendleft(neighbor)
+    return dist, prec
+endsnippet
+
+snippet prime "Primality_test"
+def prime(num):
+    for i in range(2, int(num ** 0.5) + 1):
+        if (num % i == 0):
+            return 0
+    return 1
+endsnippet
+
+snippet sieve "Sieve_of_Eratosthenes"
+def sieve(n):
+    prime = [True for i in range(n + 1)]
+    p = 2
+    while (p * p <= n):
+        if (prime[p]):
+            for i in range(p * p, n + 1, p):
+                prime[i] = False
+        p += 1
+    for i in range(2, n + 1):
+        if (prime[i]):
+            print(i)
+endsnippet
+
+snippet gcd "Greatest_common_divosor"
+def gcd(a, b):
+    if (a == 0):
+        return b
+    return gcd(b % a, a)
+endsnippet
+
+snippet lcm "Lowest_common_divisor"
+def lcm(a, b):
+    return a * b / gcd(a, b)
+endsnippet
+
+snippet xor "XOR_value_of_all_numbers_up_to_N"
+def xor(n):
+    if (n % 4 == 0):
+        return n
+    if (n % 4 == 1):
+        return 1
+    if (n % 4 == 2):
+        return n + 1
+    return 0
+endsnippet
