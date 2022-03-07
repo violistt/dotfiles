@@ -7,13 +7,15 @@ int main() {
 }
 endsnippet
 
-snippet sort
+snippet rand
 unsigned int X;
 
 int rand() {
   return (X *= 3) >> 1;
 }
+endsnippet
 
+snippet sort
 void sort(int *a, int l, int r) {
   while (l < r) {
     int i = l, j = l, k = r, b = a[l + rand() % (r - l)], tmp;
