@@ -1,0 +1,35 @@
+snippet temp
+#include <stdio.h>
+
+int main() {
+	$0
+  return 0;
+}
+endsnippet
+
+snippet sort
+unsigned int X;
+
+int rand() {
+  return (X *= 3) >> 1;
+}
+
+void sort(int *a, int l, int r) {
+  while (l < r) {
+    int i = l, j = l, k = r, b = a[l + rand() % (r - l)], tmp;
+    while (j < k) {
+      if (a[j] == b) {
+        j++;
+      } else if (a[j] < b) {
+        tmp = a[i], a[i] = a[j], a[j] = tmp;
+        i++, j++;
+      } else {
+        k--;
+        tmp = a[j], a[j] = a[k], a[k] = tmp;
+      }
+    }
+    sort(a, l, i);
+    l = k;
+  }
+}
+endsnippet
