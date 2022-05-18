@@ -23,13 +23,24 @@ list(map(int, input().split()))
 endsnippet
 
 snippet for
-for i in range(${1}):
+for i in range(${0}):
 endsnippet
 
-# ----- Algorithms ----- #
+# ----- Algoritmy / datove struktury ----- #
+
+snippet Graph
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = defaultdict(list)
+  
+    def addEdge(self, u, v):
+        self.graph[u].append(v)
+endsnippet
+
 
 snippet dij "Dijkstra"
-def dijstra(graph, weight, source = 0, target = None):
+def dijkstra(graph, weight, source = 0, target = None):
     n = len(graph)
     assert all(weight[u][v] >= 0 for u in range(n) for v in graph[u])
     prec = [None] * n
@@ -57,7 +68,7 @@ def binary_search(a, target):
     left = 0
     right = n - 1
     while (left <= right):
-        mid = left + (right - left) // 2
+        mid = left + (right - left) >> 1
         if (a[mid] == target):
             return mid
         if (a[mid] < target):
@@ -74,7 +85,7 @@ def lower_bound(a, target):
     right = n - 1
     ans = -1
     while (left <= right):
-        mid = left + (right - left) // 2
+        mid = left + (right - left) >> 1
         if (a[mid] >= target):
             ans = mid
             right = mid - 1
@@ -90,19 +101,13 @@ def upper_bound(a, target):
     right = n - 1
     ans = -1
     while (left <= right):
-        mid = left + (right - left) // 2
+        mid = left + (right - left) >> 1
         if (a[mid] > target):
             ans = mid
             right = mid - 1
         else:
             left = mid + 1
     return ans
-endsnippet
-
-snippet prefix_sum "Prefix_sum"
-def prefix_sum(a):
-    res = [sum(a[:i + 1]) for i in range(len(a))]
-    return res
 endsnippet
 
 snippet LIS "Longest_increasing_subsequence"
@@ -163,7 +168,7 @@ def bfs(graph, start = 0):
     return dist, prec
 endsnippet
 
-snippet prime "Primality_test"
+snippet is_prime "Primality_test"
 def prime(num):
     for i in range(2, int(num ** 0.5) + 1):
         if (num % i == 0):
@@ -180,16 +185,12 @@ def sieve(n):
             for i in range(p * p, n + 1, p):
                 prime[i] = False
         p += 1
-    for i in range(2, n + 1):
-        if (prime[i]):
-            print(i)
+    return prime
 endsnippet
 
 snippet gcd "Greatest_common_divosor"
 def gcd(a, b):
-    if (a == 0):
-        return b
-    return gcd(b % a, a)
+    return b if (a == 0) else gcd(b % a, a)
 endsnippet
 
 snippet lcm "Lowest_common_divisor"
@@ -206,4 +207,98 @@ def xor(n):
     if (n % 4 == 2):
         return n + 1
     return 0
+endsnippet
+
+snippet min_query_segtree
+inf = 1 << 64
+
+def construct_segment_tree(segtree, a, n):
+    for i in range(n):
+        segtree[n + i] = a[i]
+    for i in range(n - 1, 0, -1):
+        segtree[i] = min(segtree[2 * i], segtree[2 * i + 1])
+
+def range_query(segtree, left, right, n):
+    left += n
+    right += n
+    mini = maxn
+    while (left < right):
+        if (left & 1):
+            mini = min(mini, segtree[left])
+            left += 1
+        if (right & 1):
+            right -= 1
+            mini = min(mini, segtree[right])
+        left >>= 1
+        right >>= 1
+    return mini
+
+def update(segtree, pos, value, n):
+    pos += n
+    segtree[pos] = value
+    while (pos > 1):
+        pos >>= 1
+        segtree[pos] = min(segtree[2 * pos], segtree[2 * pos + 1])
+endsnippet
+
+snippet max_query_segtree
+maxn = 1 << 64
+
+def construct_max_segment_tree(segtree, a, n):
+    for i in range(n):
+        segtree[n + i] = a[i]
+    for i in range(n - 1, 0, -1):
+        segtree[i] = max(segtree[2 * i], segtree[2 * i + 1])
+
+def max_range_query(segtree, left, right, n):
+    left += n
+    right += n
+    maxi = -maxn
+    while (left < right):
+        if (left & 1):
+            maxi = max(maxi, segtree[left])
+            left += 1
+        if (right & 1):
+            right -= 1
+            maxi = max(maxi, segtree[right])
+        left >>= 1
+        right >>= 1
+    return maxi
+
+def update(segtree, pos, value, n):
+    pos += n
+    segtree[pos] = value
+    while (pos > 1):
+        pos >>= 1
+        segtree[pos] = max(segtree[2 * pos], segtree[2 * pos + 1])
+endsnippet
+
+snippet query_sum_segtree
+def construct_segment_tree(segtree, a, n):
+    for i in range(n):
+        segtree[n + i] = a[i]
+    for i in range(n - 1, 0, -1):
+        segtree[i] = segtree[i << 1] + segtree[i << 1 | 1]
+
+def range_query(segtree, left, right, n):
+    left += n
+    right += n
+    suma = 0
+    while (left < right):
+        if (left & 1):
+            suma += segtree[left]
+            left += 1
+        if (right & 1):
+            right -= 1
+            suma += segtree[right]
+        left >>= 1
+        right >>= 1
+    return suma
+
+def update(segtree, pos, value, n):
+    segtree[pos + n] = value
+    i = pos
+    while (i > 1):
+        segtree[i >> 1] = segtree[i] + segtree[i ^ 1]
+        i >>= 1
 endsnippet
