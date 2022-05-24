@@ -43,7 +43,7 @@ snippet dij "Dijkstra"
 import heapq
 inf = 1 << 64
 # if path not required:
-# 	remove parents, intead of break, return dist[d]
+    remove parents, intead of break, return dist[d]
 def dijkstra(g, s, d):
     dist = [inf] * len(g)
     dist[0] = 0
