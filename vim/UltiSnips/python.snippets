@@ -40,26 +40,33 @@ endsnippet
 
 
 snippet dij "Dijkstra"
-def dijkstra(graph, weight, source = 0, target = None):
-    n = len(graph)
-    assert all(weight[u][v] >= 0 for u in range(n) for v in graph[u])
-    prec = [None] * n
-    black = [False] * n
-    dist = [float('inf')] * n
-    dist[source] = 0
-    while (heap):
-        dist_node, node = heappop(heap)
-        if (not black[node]):
-            black[node] = True
-            if (node == target):
-                break
-            for neighbor in graph[node]:
-                dist_neighbor = dist_node + weight[node][neighbor]
-                if (dist_neighbor < dist[neighbor]):
-                    dist[neighbor] = dist_deighbor
-                    prec[neighbor] = node
-                    heappush(heap, (dist_neighbor, neighbor))
-    return dist, prec
+import heapq
+inf = 1 << 64
+# if path not required:
+# 	remove parents, intead of break, return dist[d]
+def dijkstra(g, s, d):
+    dist = [inf] * len(g)
+    dist[0] = 0
+    parents = [-1] * len(g)
+    queue = []
+    heapq.heappush(queue, (0, s))
+    found = 0
+    while (queue):
+        w, n = heapq.heappop(queue)
+        if (n == d):
+            found = 1
+            break
+        for new_n, new_w in g[n]:
+            if (new_w + w < dist[new_n]):
+                dist[new_n] = new_w + w
+                parents[new_n] = n
+                heapq.heappush(queue, (new_w + w, new_n))
+    cur = n
+    path = []
+    while (cur != -1):
+        path.append(cur)
+        cur = parents[cur]
+    return [-1] if (not found) else [i + 1 for i in path[::-1]]
 endsnippet
 
 snippet bs "Binary_search"
@@ -68,7 +75,7 @@ def binary_search(a, target):
     left = 0
     right = n - 1
     while (left <= right):
-        mid = left + (right - left) >> 1
+        mid = (left + right) >> 1
         if (a[mid] == target):
             return mid
         if (a[mid] < target):
@@ -85,7 +92,7 @@ def lower_bound(a, target):
     right = n - 1
     ans = -1
     while (left <= right):
-        mid = left + (right - left) >> 1
+        mid = (left + right) >> 1
         if (a[mid] >= target):
             ans = mid
             right = mid - 1
@@ -101,7 +108,7 @@ def upper_bound(a, target):
     right = n - 1
     ans = -1
     while (left <= right):
-        mid = left + (right - left) >> 1
+        mid = (left + right) >> 1
         if (a[mid] > target):
             ans = mid
             right = mid - 1
@@ -152,20 +159,23 @@ endsnippet
 snippet bfs "Breadth_first_search"
 from collections import deque
 
-def bfs(graph, start = 0):
-    to_visit = deque()
-    dist = [float('inf')] * len(graph)
-    prec = [None] * len(graph)
-    dist[start] = 0
-    to_visit.appendleft(start)
-    while (to_visit):
-        node = to_visit.pop()
-        for neighbor in graph[node]:
-            if (dist[neighbor] == float('inf')):
-                dist[neighbor] = dist[node] + 1
-                prec[neighbor] = node
-                to_visit.appendleft(neighbor)
-    return dist, prec
+def bfs(g, s, d):
+    visited = [0] * len(g)
+    visited[s] = 1
+    queue = deque()
+    queue.append(s)
+    dist = [-1] * len(g)
+    dist[s] = 0
+    while (queue):
+        n = queue.popleft()
+        if (n == d):
+            break
+        for sus in g[n]:
+            if (not visited[sus]):
+                queue.append(sus)
+                dist[sus] = dist[n] + 1
+                visited[sus] = 1
+    return dist[d]
 endsnippet
 
 snippet is_prime "Primality_test"
