@@ -61,7 +61,7 @@ def dijkstra(g, s, d):
                 dist[new_n] = new_w + w
                 parents[new_n] = n
                 heapq.heappush(queue, (new_w + w, new_n))
-    cur = n
+    cur = d
     path = []
     while (cur != -1):
         path.append(cur)
