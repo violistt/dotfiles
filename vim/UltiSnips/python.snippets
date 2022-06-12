@@ -250,7 +250,7 @@ class MinSegtree:
     
     def update(self, pos, value):
         pos += n
-        segtree[pos] = value
+        self.segtree[pos] = value
         while (pos > 1):
             pos >>= 1
             self.segtree[pos] = min(self.segtree[pos << 1], self.segtree[pos << 1 | 1])
@@ -284,7 +284,7 @@ class MaxSegtree:
     
     def update(self, pos, value):
         pos += n
-        segtree[pos] = value
+        self.segtree[pos] = value
         while (pos > 1):
             pos >>= 1
             self.segtree[pos] = max(self.segtree[pos << 1], self.segtree[pos << 1 | 1])
