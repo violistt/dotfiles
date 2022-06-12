@@ -225,13 +225,13 @@ endsnippet
 snippet MinSegtree
 maxn = 1 << 64
 
-class MinSegtree: # 0-indexed
+class MinSegtree:
     def __init__(self, a, n):
-        self.segtree = [0 for i in range(2 * n)]
+        self.segtree = [0 for i in range(n << 1)]
         for i in range(n):
             self.segtree[n + i] = a[i]
         for i in range(n - 1, 0, -1):
-            self.segtree[i] = min(self.segtree[2 * i], self.segtree[2 * i + 1])
+            self.segtree[i] = min(self.segtree[i << 1], self.segtree[i << 1 | 1])
 
     def min_range_query(self, left, right):
         left += n
@@ -253,19 +253,19 @@ class MinSegtree: # 0-indexed
         segtree[pos] = value
         while (pos > 1):
             pos >>= 1
-            self.segtree[pos] = min(self.segtree[2 * pos], self.segtree[2 * pos + 1])
+            self.segtree[pos] = min(self.segtree[pos << 1], self.segtree[pos << 1 | 1])
 endsnippet
 
 snippet MaxSegtree
 maxn = 1 << 64
 
-class MaxSegtree: # 0-indexed
+class MaxSegtree:
     def __init__(self, a, n):
-        self.segtree = [0 for i in range(2 * n)]
+        self.segtree = [0 for i in range(n << 1)]
         for i in range(n):
             self.segtree[n + i] = a[i]
         for i in range(n - 1, 0, -1):
-            self.segtree[i] = max(self.segtree[2 * i], self.segtree[2 * i + 1])
+            self.segtree[i] = max(self.segtree[i << 1], self.segtree[i << 1 | 1])
 
     def max_range_query(self, left, right):
         left += n
@@ -287,11 +287,11 @@ class MaxSegtree: # 0-indexed
         segtree[pos] = value
         while (pos > 1):
             pos >>= 1
-            self.segtree[pos] = max(self.segtree[2 * pos], self.segtree[2 * pos + 1])
+            self.segtree[pos] = max(self.segtree[pos << 1], self.segtree[pos << 1 | 1])
 endsnippet
 
 snippet SumSegtree
-class SumSegtree: # 0-indexed
+class SumSegtree:
     def __init__(self, a, n):
         self.segtree = [0 for i in range(2 * n)]
         for i in range(n):
@@ -316,10 +316,10 @@ class SumSegtree: # 0-indexed
 
     def update(self, pos, value):
         self.segtree[pos + n] = value
-        i = pos
-        while (i > 1):
-            self.segtree[i >> 1] = self.segtree[i] + self.segtree[i ^ 1]
-            i >>= 1
+        pos += n
+        while (pos > 1):
+            self.segtree[pos >> 1] = self.segtree[pos] + self.segtree[pos ^ 1]
+            pos >>= 1
 endsnippet
 
 snippet UnionFind
