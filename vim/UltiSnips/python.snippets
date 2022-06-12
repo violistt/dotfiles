@@ -43,7 +43,7 @@ snippet dij "Dijkstra"
 import heapq
 inf = 1 << 64
 # if path not required:
-    remove parents; intead of break, return dist[d]
+    # remove parents, intead of break, return dist[d]
 def dijkstra(g, s, d):
     dist = [inf] * len(g)
     dist[0] = 0
@@ -61,12 +61,15 @@ def dijkstra(g, s, d):
                 dist[new_n] = new_w + w
                 parents[new_n] = n
                 heapq.heappush(queue, (new_w + w, new_n))
-    cur = d
+    return dist, parents
+    """
+    cur = n
     path = []
     while (cur != -1):
         path.append(cur)
         cur = parents[cur]
     return [-1] if (not found) else [i + 1 for i in path[::-1]]
+    """
 endsnippet
 
 snippet bs "Binary_search"
@@ -205,7 +208,7 @@ endsnippet
 
 snippet lcm "Lowest_common_divisor"
 def lcm(a, b):
-    return a * b / gcd(a, b)
+    return a * b // gcd(a, b)
 endsnippet
 
 snippet xor "XOR_value_of_all_numbers_up_to_N"
@@ -219,96 +222,168 @@ def xor(n):
     return 0
 endsnippet
 
-snippet min_query_segtree
-inf = 1 << 64
-
-def construct_segment_tree(segtree, a, n):
-    for i in range(n):
-        segtree[n + i] = a[i]
-    for i in range(n - 1, 0, -1):
-        segtree[i] = min(segtree[2 * i], segtree[2 * i + 1])
-
-def range_query(segtree, left, right, n):
-    left += n
-    right += n
-    mini = maxn
-    while (left < right):
-        if (left & 1):
-            mini = min(mini, segtree[left])
-            left += 1
-        if (right & 1):
-            right -= 1
-            mini = min(mini, segtree[right])
-        left >>= 1
-        right >>= 1
-    return mini
-
-def update(segtree, pos, value, n):
-    pos += n
-    segtree[pos] = value
-    while (pos > 1):
-        pos >>= 1
-        segtree[pos] = min(segtree[2 * pos], segtree[2 * pos + 1])
-endsnippet
-
-snippet max_query_segtree
+snippet MinSegtree
 maxn = 1 << 64
 
-def construct_max_segment_tree(segtree, a, n):
-    for i in range(n):
-        segtree[n + i] = a[i]
-    for i in range(n - 1, 0, -1):
-        segtree[i] = max(segtree[2 * i], segtree[2 * i + 1])
+class MinSegtree:
+    def __init__(self, a, n):
+        self.segtree = [0 for i in range(2 * n)]
+        for i in range(n):
+            self.segtree[n + i] = a[i]
+        for i in range(n - 1, 0, -1):
+            self.segtree[i] = min(self.segtree[2 * i], self.segtree[2 * i + 1])
 
-def max_range_query(segtree, left, right, n):
-    left += n
-    right += n
-    maxi = -maxn
-    while (left < right):
-        if (left & 1):
-            maxi = max(maxi, segtree[left])
-            left += 1
-        if (right & 1):
-            right -= 1
-            maxi = max(maxi, segtree[right])
-        left >>= 1
-        right >>= 1
-    return maxi
-
-def update(segtree, pos, value, n):
-    pos += n
-    segtree[pos] = value
-    while (pos > 1):
-        pos >>= 1
-        segtree[pos] = max(segtree[2 * pos], segtree[2 * pos + 1])
+    def min_range_query(self, left, right):
+        left += n - 1
+        right += n
+        mini = maxn
+        while (left < right):
+            if (left & 1):
+                mini = min(mini, self.segtree[left])
+                left += 1
+            if (right & 1):
+                right -= 1
+                mini = min(mini, self.segtree[right])
+            left >>= 1
+            right >>= 1
+        return mini
+    
+    def update(self, pos, value):
+        pos += n
+        segtree[pos] = value
+        while (pos > 1):
+            pos >>= 1
+            self.segtree[pos] = min(self.segtree[2 * pos], self.segtree[2 * pos + 1])
 endsnippet
 
-snippet query_sum_segtree
-def construct_segment_tree(segtree, a, n):
-    for i in range(n):
-        segtree[n + i] = a[i]
-    for i in range(n - 1, 0, -1):
-        segtree[i] = segtree[i << 1] + segtree[i << 1 | 1]
+snippet MaxSegtree
+maxn = 1 << 64
 
-def range_query(segtree, left, right, n):
-    left += n
-    right += n
-    suma = 0
-    while (left < right):
-        if (left & 1):
-            suma += segtree[left]
-            left += 1
-        if (right & 1):
-            right -= 1
-            suma += segtree[right]
-        left >>= 1
-        right >>= 1
-    return suma
+class MaxSegtree:
+    def __init__(self, a, n):
+        self.segtree = [0 for i in range(2 * n)]
+        for i in range(n):
+            self.segtree[n + i] = a[i]
+        for i in range(n - 1, 0, -1):
+            self.segtree[i] = max(self.segtree[2 * i], self.segtree[2 * i + 1])
 
-def update(segtree, pos, value, n):
-    segtree[pos + n] = value
-    i = pos
-    while (i > 1):
-        segtree[i >> 1] = segtree[i] + segtree[i ^ 1]
-        i >>= 1
+    def max_range_query(self, left, right):
+        left += n - 1
+        right += n
+        maxi = -maxn
+        while (left < right):
+            if (left & 1):
+                maxi = max(maxi, self.segtree[left])
+                left += 1
+            if (right & 1):
+                right -= 1
+                maxi = max(maxi, self.segtree[right])
+            left >>= 1
+            right >>= 1
+        return maxi
+    
+    def update(self, pos, value):
+        pos += n
+        segtree[pos] = value
+        while (pos > 1):
+            pos >>= 1
+            self.segtree[pos] = max(self.segtree[2 * pos], self.segtree[2 * pos + 1])
+endsnippet
+
+snippet SumSegtree
+class SumSegtree:
+    def __init__(self, a, n):
+        self.segtree = [0 for i in range(2 * n)]
+        for i in range(n):
+            self.segtree[n + i] = a[i]
+        for i in range(n - 1, 0, -1):
+            self.segtree[i] = self.segtree[i << 1] + self.segtree[i << 1 | 1]
+
+    def sum_range_query(self, left, right):
+        left += n
+        right += n + 1
+        suma = 0
+        while (left < right):
+            if (left & 1):
+                suma += self.segtree[left]
+                left += 1
+            if (right & 1):
+                right -= 1
+                suma += self.segtree[right]
+            left >>= 1
+            right >>= 1
+        return suma
+
+    def update(self, pos, value):
+        self.segtree[pos + n] = value
+        i = pos
+        while (i > 1):
+            self.segtree[i >> 1] = self.segtree[i] + self.segtree[i ^ 1]
+            i >>= 1
+endsnippet
+
+snippet UnionFind
+class UnionFind:
+    def __init__(self, n):
+        self.n = n
+        self.parents = [-1] * n
+        self.group = n
+
+    def find(self, x):
+        if self.parents[x] < 0:
+            return x
+        else:
+            self.parents[x] = self.find(self.parents[x])
+            return self.parents[x]
+
+    def union(self, x, y):
+        x = self.find(x)
+        y = self.find(y)
+
+        if x == y:
+            return
+        self.group -= 1
+        if self.parents[x] > self.parents[y]:
+            x, y = y, x
+
+        self.parents[x] += self.parents[y]
+        self.parents[y] = x
+
+    def size(self, x):
+        return -self.parents[self.find(x)]
+
+    def same(self, x, y):
+        return self.find(x) == self.find(y)
+
+    def members(self, x):
+        root = self.find(x)
+        return [i for i in range(self.n) if self.find(i) == root]
+
+    def roots(self):
+        return [i for i, x in enumerate(self.parents) if x < 0]
+
+    def group_count(self):
+        return self.group
+
+    def all_group_members(self):
+        dic = {r:[] for r in self.roots()}
+        for i in range(self.n):
+            dic[self.find(i)].append(i)
+        return dic
+
+    def __str__(self):
+        return '\n'.join('{}: {}'.format(r, self.members(r)) for r in self.roots())
+endsnippet
+
+snippet tkinter
+from tkinter import *
+
+root = Tk()
+
+canvas = Canvas(width = 500, height = 500)
+canvas.pack()
+
+$0
+
+root.mainloop()
 endsnippet
