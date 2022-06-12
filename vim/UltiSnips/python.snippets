@@ -235,7 +235,7 @@ class MinSegtree:
 
     def min_range_query(self, left, right):
         left += n - 1
-        right += n
+        right += n + 1
         mini = maxn
         while (left < right):
             if (left & 1):
@@ -269,7 +269,7 @@ class MaxSegtree:
 
     def max_range_query(self, left, right):
         left += n - 1
-        right += n
+        right += n + 1
         maxi = -maxn
         while (left < right):
             if (left & 1):
