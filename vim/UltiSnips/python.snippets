@@ -234,7 +234,7 @@ class MinSegtree:
             self.segtree[i] = min(self.segtree[2 * i], self.segtree[2 * i + 1])
 
     def min_range_query(self, left, right):
-        left += n - 1
+        left += n
         right += n + 1
         mini = maxn
         while (left < right):
@@ -268,7 +268,7 @@ class MaxSegtree:
             self.segtree[i] = max(self.segtree[2 * i], self.segtree[2 * i + 1])
 
     def max_range_query(self, left, right):
-        left += n - 1
+        left += n
         right += n + 1
         maxi = -maxn
         while (left < right):
