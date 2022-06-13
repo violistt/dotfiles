@@ -227,7 +227,7 @@ maxn = 1 << 64
 
 class MinSegtree:
     def __init__(self, a, n):
-        self.segtree = [0 for i in range(n << 1)]
+        self.segtree = [0 for i in range(2 * n)]
         for i in range(n):
             self.segtree[n + i] = a[i]
         for i in range(n - 1, 0, -1):
@@ -261,7 +261,7 @@ maxn = 1 << 64
 
 class MaxSegtree:
     def __init__(self, a, n):
-        self.segtree = [0 for i in range(n << 1)]
+        self.segtree = [0 for i in range(2 * n)]
         for i in range(n):
             self.segtree[n + i] = a[i]
         for i in range(n - 1, 0, -1):
@@ -293,7 +293,7 @@ endsnippet
 snippet SumSegtree
 class SumSegtree:
     def __init__(self, a, n):
-        self.segtree = [0 for i in range(n << 1)]
+        self.segtree = [0 for i in range(2 * n)]
         for i in range(n):
             self.segtree[n + i] = a[i]
         for i in range(n - 1, 0, -1):
