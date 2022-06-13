@@ -330,7 +330,7 @@ class UnionFind:
         self.group = n
 
     def find(self, x):
-        if self.parents[x] < 0:
+        if (self.parents[x] < 0):
             return x
         else:
             self.parents[x] = self.find(self.parents[x])
@@ -340,10 +340,10 @@ class UnionFind:
         x = self.find(x)
         y = self.find(y)
 
-        if x == y:
+        if (x == y):
             return
         self.group -= 1
-        if self.parents[x] > self.parents[y]:
+        if (self.parents[x] > self.parents[y]):
             x, y = y, x
 
         self.parents[x] += self.parents[y]
@@ -357,16 +357,16 @@ class UnionFind:
 
     def members(self, x):
         root = self.find(x)
-        return [i for i in range(self.n) if self.find(i) == root]
+        return [i for i in range(self.n) if (self.find(i) == root)]
 
     def roots(self):
-        return [i for i, x in enumerate(self.parents) if x < 0]
+        return [i for i, x in enumerate(self.parents) if (x < 0)]
 
     def group_count(self):
         return self.group
 
     def all_group_members(self):
-        dic = {r:[] for r in self.roots()}
+        dic = {r : [] for r in self.roots()}
         for i in range(self.n):
             dic[self.find(i)].append(i)
         return dic
