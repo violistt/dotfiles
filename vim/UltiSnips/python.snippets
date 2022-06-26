@@ -28,6 +28,10 @@ endsnippet
 
 # ----- Algoritmy / datove struktury ----- #
 
+snippet dict
+from collections import defaultdict
+endsnippet
+
 snippet Graph
 class Graph:
     def __init__(self, vertices):
@@ -222,104 +226,39 @@ def xor(n):
     return 0
 endsnippet
 
-snippet MinSegtree
+snippet Segtree
 maxn = 1 << 64
 
-class MinSegtree:
-    def __init__(self, a, n):
+class Segtree:
+    def __init__(self, func, a, n):
+        self.func = func
         self.segtree = [0 for i in range(2 * n)]
         for i in range(n):
             self.segtree[n + i] = a[i]
         for i in range(n - 1, 0, -1):
-            self.segtree[i] = min(self.segtree[i << 1], self.segtree[i << 1 | 1])
+            self.segtree[i] = self.func([self.segtree[i << 1], self.segtree[i << 1 | 1]])
 
-    def min_range_query(self, left, right):
+    def range_query(self, left, right):
         left += n
         right += n + 1
-        mini = maxn
+        res = 0 if (self.func == sum) else maxn if (self.func == min) else -maxn
         while (left < right):
             if (left & 1):
-                mini = min(mini, self.segtree[left])
+                res = self.func([res, self.segtree[left]])
                 left += 1
             if (right & 1):
                 right -= 1
-                mini = min(mini, self.segtree[right])
+                res = self.func([res, self.segtree[right]])
             left >>= 1
             right >>= 1
-        return mini
-    
+        return res
+
     def update(self, pos, value):
         pos += n
         self.segtree[pos] = value
         while (pos > 1):
             pos >>= 1
-            self.segtree[pos] = min(self.segtree[pos << 1], self.segtree[pos << 1 | 1])
-endsnippet
-
-snippet MaxSegtree
-maxn = 1 << 64
-
-class MaxSegtree:
-    def __init__(self, a, n):
-        self.segtree = [0 for i in range(2 * n)]
-        for i in range(n):
-            self.segtree[n + i] = a[i]
-        for i in range(n - 1, 0, -1):
-            self.segtree[i] = max(self.segtree[i << 1], self.segtree[i << 1 | 1])
-
-    def max_range_query(self, left, right):
-        left += n
-        right += n + 1
-        maxi = -maxn
-        while (left < right):
-            if (left & 1):
-                maxi = max(maxi, self.segtree[left])
-                left += 1
-            if (right & 1):
-                right -= 1
-                maxi = max(maxi, self.segtree[right])
-            left >>= 1
-            right >>= 1
-        return maxi
-    
-    def update(self, pos, value):
-        pos += n
-        self.segtree[pos] = value
-        while (pos > 1):
-            pos >>= 1
-            self.segtree[pos] = max(self.segtree[pos << 1], self.segtree[pos << 1 | 1])
-endsnippet
-
-snippet SumSegtree
-class SumSegtree:
-    def __init__(self, a, n):
-        self.segtree = [0 for i in range(2 * n)]
-        for i in range(n):
-            self.segtree[n + i] = a[i]
-        for i in range(n - 1, 0, -1):
-            self.segtree[i] = self.segtree[i << 1] + self.segtree[i << 1 | 1]
-
-    def sum_range_query(self, left, right):
-        left += n
-        right += n + 1
-        suma = 0
-        while (left < right):
-            if (left & 1):
-                suma += self.segtree[left]
-                left += 1
-            if (right & 1):
-                right -= 1
-                suma += self.segtree[right]
-            left >>= 1
-            right >>= 1
-        return suma
-
-    def update(self, pos, value):
-        self.segtree[pos + n] = value
-        pos += n
-        while (pos > 1):
-            self.segtree[pos << 1] = self.segtree[pos] + self.segtree[pos ^ 1]
-            pos >>= 1
+            self.segtree[pos] = self.func([self.segtree[pos << 1], self.segtree[pos << 1 | 1]])
 endsnippet
 
 snippet UnionFind
