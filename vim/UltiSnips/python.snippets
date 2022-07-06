@@ -232,15 +232,16 @@ maxn = 1 << 64
 class Segtree:
     def __init__(self, func, a, n):
         self.func = func
-        self.segtree = [0 for i in range(2 * n)]
-        for i in range(n):
-            self.segtree[n + i] = a[i]
-        for i in range(n - 1, 0, -1):
+        self.n = n
+        self.segtree = [0 for i in range(2 * self.n)]
+        for i in range(self.n):
+            self.segtree[self.n + i] = a[i]
+        for i in range(self.n - 1, 0, -1):
             self.segtree[i] = self.func([self.segtree[i << 1], self.segtree[i << 1 | 1]])
 
     def range_query(self, left, right):
-        left += n
-        right += n + 1
+        left += self.n
+        right += self.n + 1
         res = 0 if (self.func == sum) else maxn if (self.func == min) else -maxn
         while (left < right):
             if (left & 1):
@@ -254,7 +255,7 @@ class Segtree:
         return res
 
     def update(self, pos, value):
-        pos += n
+        pos += self.n
         self.segtree[pos] = value
         while (pos > 1):
             pos >>= 1
