@@ -163,6 +163,23 @@ def dfs(graph, start, seen):
             to_visit.append(neighbor)
 endsnippet
 
+snippet connected_components
+def dfs1():
+    visited = [0 for i in range(n)]
+    cnt = 0
+    for node in range(n):
+        if (not visited[node]):
+            dfs2(node, visited)
+            cnt += 1
+    return cnt
+
+def dfs2(node, visited):
+    visited[node] = 1
+    for sus in g[node]:
+        if (not visited[sus]):
+            dfs2(sus, visited)
+endsnippet
+
 snippet bfs "Breadth_first_search"
 from collections import deque
 
@@ -213,6 +230,11 @@ endsnippet
 snippet lcm "Lowest_common_divisor"
 def lcm(a, b):
     return a * b // gcd(a, b)
+endsnippet
+
+snippet nCr
+def nCr(n, k):
+    return factorial(n) // (factorial(n - k) * factorial(k))
 endsnippet
 
 snippet xor "XOR_value_of_all_numbers_up_to_N"
@@ -316,11 +338,11 @@ class UnionFind:
 endsnippet
 
 snippet tkinter
-from tkinter import *
+import tkinter
 
-root = Tk()
+root = tkinter.Tk()
 
-canvas = Canvas(width = 500, height = 500)
+canvas = tkinter.Canvas(width = 500, height = 500)
 canvas.pack()
 
 $0
