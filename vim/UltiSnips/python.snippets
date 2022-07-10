@@ -248,6 +248,25 @@ def xor(n):
     return 0
 endsnippet
 
+snippet Fenwick
+class Fenwick:
+    def __init__(self, n):
+        self.n = n
+        self.fenw = [0] * (self.n + 1)
+
+    def modify(self, pos, value):
+        while (pos < self.n):
+            self.fenw[pos] += value
+            pos |= (pos + 1)
+
+    def get(self, pos):
+        res = 0
+        while (pos >= 0):
+            res += self.fenw[pos]
+            pos = (pos & (pos + 1)) - 1
+        return res
+endsnippet
+
 snippet Segtree
 maxn = 1 << 64
 
