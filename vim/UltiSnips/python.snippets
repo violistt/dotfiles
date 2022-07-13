@@ -45,35 +45,31 @@ endsnippet
 
 snippet dij "Dijkstra"
 import heapq
-inf = 1 << 64
-# if path not required:
-    # remove parents, intead of break, return dist[d]
 def dijkstra(g, s, d):
     dist = [inf] * len(g)
-    dist[0] = 0
+    dist[s] = 0
     parents = [-1] * len(g)
     queue = []
     heapq.heappush(queue, (0, s))
-    found = 0
     while (queue):
         w, n = heapq.heappop(queue)
-        if (n == d):
-            found = 1
-            break
+        if (dist[n] < w):
+            continue
         for new_n, new_w in g[n]:
             if (new_w + w < dist[new_n]):
                 dist[new_n] = new_w + w
                 parents[new_n] = n
                 heapq.heappush(queue, (new_w + w, new_n))
     return dist, parents
-    """
-    cur = n
-    path = []
-    while (cur != -1):
-        path.append(cur)
-        cur = parents[cur]
-    return [-1] if (not found) else [i + 1 for i in path[::-1]]
-    """
+endsnippet
+
+snippet path
+cur = d
+path = [cur]
+while (cur != s):
+    cur = parents[cur]
+    path.append(cur)
+path.reverse()
 endsnippet
 
 snippet bs "Binary_search"
@@ -203,9 +199,20 @@ def bfs(g, s, d):
 endsnippet
 
 snippet is_prime "Primality_test"
-def prime(num):
-    for i in range(2, int(num ** 0.5) + 1):
-        if (num % i == 0):
+def is_prime(n):
+    if (n < 5 or n & 1 == 0 or n % 3 == 0):
+        return 2 <= n <= 3
+    s = ((n - 1) & (1 - n)).bit_length() - 1
+    d = n >> s
+    for a in [2, 325, 9375, 28178, 450775, 9780504, 1795265022]:
+        p = pow(a, d, n)
+        if (p == 1 or p == n - 1 or a % n == 0):
+            continue
+        for _ in range(s):
+            p = (p * p) % n
+            if (p == n - 1):
+                break
+        else:
             return 0
     return 1
 endsnippet
@@ -220,6 +227,34 @@ def sieve(n):
                 prime[i] = False
         p += 1
     return prime
+endsnippet
+
+snippet prime_sieve
+def prime_sieve(n):
+    """returns a sieve of primes >= 5 and < n"""
+    flag = n % 6 == 2
+    sieve = bytearray((n // 3 + flag >> 3) + 1)
+    for i in range(1, int(n ** 0.5) // 3 + 1):
+        if (not (sieve[i >> 3] >> (i & 7)) & 1):
+            k = (3 * i + 1) | 1
+            for j in range(k * k // 3, n // 3 + flag, 2 * k):
+                sieve[j >> 3] |= 1 << (j & 7)
+            for j in range(k * (k - 2 * (i & 1) + 4) // 3, n // 3 + flag, 2 * k):
+                sieve[j >> 3] |= 1 << (j & 7)
+    return sieve
+
+
+def prime_list(n):
+    """returns a list of primes <= n"""
+    res = []
+    if (n > 1):
+        res.append(2)
+    if (n > 2):
+        res.append(3)
+    if (n > 4):
+        sieve = prime_sieve(n + 1)
+        res.extend(3 * i + 1 | 1 for i in range(1, (n + 1) // 3 + (n % 6 == 1)) if (not (sieve[i >> 3] >> (i & 7)) & 1))
+    return 
 endsnippet
 
 snippet gcd "Greatest_common_divosor"
@@ -237,6 +272,187 @@ def nCr(n, k):
     return factorial(n) // (factorial(n - k) * factorial(k))
 endsnippet
 
+snippet mod_nCr
+def nCr_mod(maxn = 2 * 10 ** 5, mod = 10 ** 9 + 7):
+    maxn = min(maxn, mod - 1)
+
+    fact, inv_fact = [0] * (maxn + 1), [0] * (maxn + 1)
+    fact[0] = 1
+    for i in range(maxn):
+        fact[i + 1] = fact[i] * (i + 1) % mod
+
+    inv_fact[-1] = pow(fact[-1], mod - 2, mod)
+    for i in reversed(range(maxn)):
+        inv_fact[i] = inv_fact[i + 1] * (i + 1) % mod
+
+    def nCr_mod(n, r):
+        res = 1
+        while n or r:
+            a, b = n % mod, r % mod
+            if a < b:
+                return 0
+            res = res * fact[a] % mod * inv_fact[b] % mod * inv_fact[a - b] % mod
+            n //= mod
+            r //= mod
+        return res
+
+    return nCr_mod
+endsnippet
+
+snippet discrete_log
+def discrete_log(a, b, mod):
+    """
+    Returns smallest x > 0 s.t. pow(a, x, mod) == b or None if no such x exists.
+    Note: works even if a and mod are not coprime.
+    """
+    n = int(mod ** 0.5) + 1
+
+    # tiny_step[x] = maximum j <= n s.t. b * a^j % mod = x
+    tiny_step, e = {}, 1
+    for j in range(1, n + 1):
+        e = e * a % mod
+        if (e == b):
+            return j
+        tiny_step[b * e % mod] = j
+
+    # find (i, j) s.t. a^(n * i) % mod = b * a^j % mod
+    factor = e
+    for i in range(2, n + 2):
+        e = e * factor % mod
+        if (e in tiny_step):
+            j = tiny_step[e]
+            return n * i - j if (pow(a, n * i - j, mod) == b) else None
+endsnippet
+
+snippet factorization
+from collections import Counter
+
+def gcd(x, y):
+    """greatest common divisor of x and y"""
+    while (y):
+        x, y = y, x % y
+    return x
+
+
+def memodict(f):
+    """memoization decorator for a function taking a single argument"""
+    class memodict(dict):
+        def __missing__(self, key):
+            ret = self[key] = f(key)
+            return ret
+
+    return memodict().__getitem__
+
+def pollard_rho(n):
+    """returns a random factor of n"""
+    if (n & 1) == 0:
+        return 2
+    if (n % 3) == 0:
+        return 3
+
+    s = ((n - 1) & (1 - n)).bit_length() - 1
+    d = n >> s
+    for a in [2, 325, 9375, 28178, 450775, 9780504, 1795265022]:
+        p = pow(a, d, n)
+        if (p == 1 or p == n - 1 or a % n == 0):
+            continue
+        for _ in range(s):
+            prev = p
+            p = (p * p) % n
+            if (p == 1):
+                return gcd(prev - 1, n)
+            if (p == n - 1):
+                break
+        else:
+            for i in range(2, n):
+                x, y = i, (i * i + 1) % n
+                f = gcd(abs(x - y), n)
+                while (f == 1):
+                    x, y = (x * x + 1) % n, (y * y + 1) % n
+                    y = (y * y + 1) % n
+                    f = gcd(abs(x - y), n)
+                if (f != n):
+                    return f
+    return n
+
+@memodict
+def prime_factors(n):
+    """returns a Counter of the prime factorization of n"""
+    if (n <= 1):
+        return Counter()
+    f = pollard_rho(n)
+    return Counter([n]) if (f == n) else prime_factors(f) + prime_factors(n // f)
+
+
+def distinct_factors(n):
+    """returns a list of all distinct factors of n"""
+    factors = [1]
+    for p, exp in prime_factors(n).items():
+        factors += [p ** i * factor for factor in factors for i in range(1, exp + 1)]
+    return factors
+
+
+def all_factors(n):
+    """returns a sorted list of all distinct factors of n"""
+    small, large = [], []
+    for i in range(1, int(n ** 0.5) + 1, 2 if (n & 1) else 1):
+        if (not n % i):
+            small.append(i)
+            large.append(n // i)
+    if (small[-1] == large[-1]):
+        large.pop()
+    large.reverse()
+    small.extend(large)
+    return small
+endsnippet
+
+snippet fft
+import cmath
+
+def fft(a, inv = 0):
+    n = len(a)
+    w = [cmath.rect(1, (-2 if (inv) else 2) * cmath.pi * i / n) for i in range(n >> 1)]
+    rev = [0] * n
+    for i in range(n):
+        rev[i] = rev[i >> 1] >> 1
+        if (i & 1):
+            rev[i] |= n >> 1
+        if (i < rev[i]):
+            a[i], a[rev[i]] = a[rev[i]], a[i]
+
+    step = 2
+    while (step <= n):
+        half, diff = step >> 1, n // step
+        for i in range(0, n, step):
+            pw = 0
+            for j in range(i, i + half):
+                v = a[j + half] * w[pw]
+                a[j + half] = a[j] - v
+                a[j] += v
+                pw += diff
+        step <<= 1
+
+    if (inv):
+        for i in range(n):
+            a[i] /= n
+
+
+def fft_conv(a, b):
+    s = len(a) + len(b) - 1
+    n = 1 << s.bit_length()
+    a.extend([0.0] * (n - len(a)))
+    b.extend([0.0] * (n - len(b)))
+
+    fft(a), fft(b)
+    for i in range(n):
+        a[i] *= b[i]
+    fft(a, True)
+
+    a = [a[i].real for i in range(s)]
+    return a
+endsnippet
+
+
 snippet xor "XOR_value_of_all_numbers_up_to_N"
 def xor(n):
     if (n % 4 == 0):
@@ -246,6 +462,71 @@ def xor(n):
     if (n % 4 == 2):
         return n + 1
     return 0
+endsnippet
+
+# Kombinatorika
+
+snippet comb
+import math
+import operator as op
+from functools import reduce
+
+def memoize(f):
+    """memoization decorator for a function taking one or more arguments"""
+    class memodict(dict):
+        def __getitem__(self, *key):
+            return dict.__getitem__(self, key)
+
+        def __missing__(self, key):
+            ret = self[key] = f(*key)
+            return ret
+
+    return memodict().__getitem__
+
+
+@memoize
+def catalan_recursive(n):
+    if (n == 0):
+        return 1
+    return (2 * (2 * n - 1) * catalan_recursive(n - 1)) // (n + 1)
+
+
+@memoize
+def euler_recursive(n, k):
+    if (k == 0) or (n - 1 == k):
+        return 1
+    return (n - k) * euler_recursive(n - 1, k - 1) + (k + 1) * euler_recursive(n - 1, k)
+
+
+@memoize
+def stirling_1_recursive(n, k):
+    if (n == k == 0):
+        return 1
+    if (n == 0) or (k == 0):
+        return 0
+    return stirling_1_recursive(n - 1, k - 1) + (n - 1) * stirling_1_recursive(n - 1, k)
+
+
+@memoize
+def stirling_2_recursive(n, k):
+    if (k == 1) or (n == k):
+        return 1
+    return stirling_2_recursive(n - 1, k - 1) + k * stirling_2_recursive(n - 1, k)
+
+
+nCr = lambda n, r: reduce(op.mul, range(n - r + 1, n + 1), 1) // math.factorial(r)
+
+multinomial = lambda k: math.factorial(sum(k)) // reduce(op.mul, (math.factorial(i) for i in k))
+
+derangements = lambda n: int(math.factorial(n) / math.e + 0.5)
+
+bell = lambda n: sum(stirling_2_recursive(k, n) for k in range(n + 1))
+
+catalan = lambda n: nCr(2 * n, n) // (n + 1)
+
+euler = lambda n, k: sum((1 - 2 * (j & 1)) * nCr(n + 1, j) * ((k + 1 - j) **n ) for j in range(k + 1))
+
+stirling_2 = lambda n, k: sum(((-1) ** (k - j)) * nCr(k, j) * (j **n ) for j in range(k + 1)) // math.factorial(k)
 endsnippet
 
 snippet Fenwick
