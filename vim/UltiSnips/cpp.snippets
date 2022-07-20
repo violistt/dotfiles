@@ -40,6 +40,11 @@ endsnippet
 
 snippet dbg
 for (auto i : ${1}) cout << i << " ";
+cout << '\n';
+endsnippet
+
+snippet dbg_pair
+for (auto &[x, y]: ${1}) cout << x << " " << y << '\n';
 endsnippet
 
 snippet gcd "Greatest_common_divisor"
@@ -116,4 +121,29 @@ int MaxRangeQuery(vector<int> &segtree, int left, int right, int n) {
   }
   return maxi;
 }
+endsnippet
+
+snippet dijkstra
+vector<long long> dist(n, numeric_limits<long long>::max());
+vector<int> root(n, -1);
+priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> que;
+function<void(int)> Dijkstra = [&](int start) {
+  dist[start] = 0;
+  que.emplace(dist[start], start);
+  while (!que.empty()) {
+    long long w = que.top().first;
+    int n = que.top().second;
+    que.pop();
+    if (dist[n] < w) {
+      continue;
+    }
+    for (auto &[sus_n, sus_w] : g[n]) {
+      if (w + sus_w < dist[sus_n]) {
+        dist[sus_n] = w + sus_w;
+        root[sus_n] = n;
+        que.emplace(dist[sus_n], sus_n);
+      }
+    }
+  }
+};
 endsnippet
