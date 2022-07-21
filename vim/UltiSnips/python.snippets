@@ -43,24 +43,22 @@ class Graph:
 endsnippet
 
 
-snippet dij "Dijkstra"
+snippet dijkstra "Dijkstra"
 import heapq
-def dijkstra(g, s, d):
+def dijkstra(s):
     dist = [inf] * len(g)
     dist[s] = 0
-    parents = [-1] * len(g)
     queue = []
-    heapq.heappush(queue, (0, s))
+    heapq.heappush(queue, (dist[s], s))
     while (queue):
         w, n = heapq.heappop(queue)
         if (dist[n] < w):
             continue
-        for new_n, new_w in g[n]:
-            if (new_w + w < dist[new_n]):
-                dist[new_n] = new_w + w
-                parents[new_n] = n
-                heapq.heappush(queue, (new_w + w, new_n))
-    return dist, parents
+        for sus_n, sus_w in g[n]:
+            if (w + sus_w < dist[sus_n]):
+                dist[sus_n] = w + sus_w
+                heapq.heappush(queue, (dist[sus_n], sus_n))
+    return dist
 endsnippet
 
 snippet path
@@ -179,23 +177,21 @@ endsnippet
 snippet bfs "Breadth_first_search"
 from collections import deque
 
-def bfs(g, s, d):
+def bfs(start):
     visited = [0] * len(g)
     visited[s] = 1
     queue = deque()
-    queue.append(s)
+    queue.append(start)
     dist = [-1] * len(g)
-    dist[s] = 0
+    dist[start] = 0
     while (queue):
         n = queue.popleft()
-        if (n == d):
-            break
         for sus in g[n]:
             if (not visited[sus]):
                 queue.append(sus)
                 dist[sus] = dist[n] + 1
                 visited[sus] = 1
-    return dist[d]
+    return dist
 endsnippet
 
 snippet is_prime "Primality_test"
