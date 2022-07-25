@@ -82,45 +82,52 @@ int llpow(int x, int n) {
 }
 endsnippet
 
-snippet MaxSegtree
-const int maxn = (int) 1e9;
+snippet segtree
+template <typename T>
 
-void Build(vector<int> &segtree, vector<int> a, int n) {
-  for (int i = 0; i < n; i++) {
-    segtree[n + i] = a[i];
-  }
-  for (int i = n - 1; i > 0; i--) {
-    segtree[i] = max(segtree[2 * i], segtree[2 * i + 1]);
-  }
-}
+class segtree {
+ public:
+  vector<T> tree;
+  int n;
 
-void Update(vector<int> &segtree, int pos, int value, int n) {
-  segtree[pos + n] = value;
-  int i = pos;
-  while (i > 1) {
-    segtree[i >> 1] = segtree[i] + segtree[i ^ 1];
-    i >>= 1;
-  }
-}
-
-int MaxRangeQuery(vector<int> &segtree, int left, int right, int n) {
-  left += n;
-  right += n;
-  int maxi = -maxn;
-  while (left < right) {
-    if (left & 1) {
-      maxi = max(maxi, segtree[left]);
-      left++;
+  segtree(const vector<int> &a) : n(a.size()) {
+    tree.resize(n << 1);
+    for (int i = 0; i < n; i++) {
+      tree[n + i] = a[i];
     }
-    if (right & 1) {
-      right--;
-      maxi = max(maxi, segtree[right]);
+    for (int i = n - 1; i > 0; i--) {
+      tree[i] = min(tree[i << 1], tree[i << 1 | 1]);
     }
-    left >>= 1;
-    right >>= 1;
   }
-  return maxi;
-}
+
+  void modify(int x, T v) {
+    x += n;
+    tree[x] = v;
+    while (x > 1) {
+      x >>= 1;
+      tree[x] = min(tree[x << 1], tree[x << 1 | 1]);
+    }
+  }
+
+  T query(int left, int right) {
+    left += n;
+    right += n + 1;
+    T v = numeric_limits<T>::max();
+    while (left < right) {
+      if (left & 1) {
+        v = min(v, tree[left]);
+        left++;
+      }
+      if (right & 1) {
+        right--;
+        v = min(v, tree[right]);
+      }
+      left >>= 1;
+      right >>= 1;
+    }
+    return v;
+  }
+};
 endsnippet
 
 snippet dijkstra
@@ -143,6 +150,57 @@ function<void(int)> Dijkstra = [&](int start) {
         root[sus_n] = n;
         que.emplace(dist[sus_n], sus_n);
       }
+    }
+  }
+};
+endsnippet
+
+snippet fenwick
+template <typename T>
+class fenwick {
+ public:
+  vector<T> fenw;
+  int n;
+
+  fenwick(int _n) : n(_n) {
+    fenw.resize(n);
+  }
+
+  void modify(int x, T v) {
+    while (x < n) {
+      fenw[x] += v;
+      x |= (x + 1);
+    }
+  }
+
+  T get(int x) {
+    T v{};
+    while (x >= 0) {
+      v += fenw[x];
+      x = (x & (x + 1)) - 1;
+    }
+    return v;
+  }
+};
+endsnippet
+
+snippet dsu
+class dsu {
+  public:
+  vector<int> p;
+  int n;
+  dsu(int _n) : n(_n) {
+    p.resize(n);
+    iota(p.begin(), p.end(), 0);
+  }
+  inline int get(int x) {
+    return (x == p[x] ? x : (p[x] = get(p[x])));
+  }
+  inline void unite(int x, int y) {
+    x = get(x);
+    y = get(y);
+    if (x != y) {
+      p[x] = y;
     }
   }
 };
