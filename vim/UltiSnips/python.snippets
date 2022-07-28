@@ -45,11 +45,12 @@ endsnippet
 
 snippet dijkstra "Dijkstra"
 import heapq
-def dijkstra(s):
+def dijkstra(start):
     dist = [inf] * len(g)
-    dist[s] = 0
+    dist[start] = 0
+    root = [-1] * len(g)
     queue = []
-    heapq.heappush(queue, (dist[s], s))
+    heapq.heappush(queue, (dist[start], start))
     while (queue):
         w, n = heapq.heappop(queue)
         if (dist[n] < w):
@@ -57,8 +58,9 @@ def dijkstra(s):
         for sus_n, sus_w in g[n]:
             if (w + sus_w < dist[sus_n]):
                 dist[sus_n] = w + sus_w
+                root[sus_n] = n
                 heapq.heappush(queue, (dist[sus_n], sus_n))
-    return dist
+    return dist, root
 endsnippet
 
 snippet path
@@ -146,15 +148,15 @@ def solve(a):
 endsnippet
 
 snippet dfs "Depth_first_search"
-def dfs(graph, start, seen):
-    seen[start] = True
+def dfs(start):
+    visited[start] = True
     to_visit = [start]
     while (to_visit):
         node = to_visit.pop()
         for neighbour in graph[node]:
-            if (not seen[neighbor]):
-            seen[neighbor] = True
-            to_visit.append(neighbor)
+            if (not visited[neighbor]):
+                visited[neighbor] = True
+                to_visit.append(neighbor)
 endsnippet
 
 snippet connected_components
@@ -179,7 +181,7 @@ from collections import deque
 
 def bfs(start):
     visited = [0] * len(g)
-    visited[s] = 1
+    visited[start] = 1
     queue = deque()
     queue.append(start)
     dist = [-1] * len(g)
@@ -525,7 +527,7 @@ euler = lambda n, k: sum((1 - 2 * (j & 1)) * nCr(n + 1, j) * ((k + 1 - j) **n ) 
 stirling_2 = lambda n, k: sum(((-1) ** (k - j)) * nCr(k, j) * (j **n ) for j in range(k + 1)) // math.factorial(k)
 endsnippet
 
-snippet Fenwick
+snippet fenwick
 class Fenwick:
     def __init__(self, n):
         self.n = n
@@ -557,7 +559,14 @@ class Segtree:
         for i in range(self.n - 1, 0, -1):
             self.segtree[i] = self.func([self.segtree[i << 1], self.segtree[i << 1 | 1]])
 
-    def range_query(self, left, right):
+    def modify(self, pos, value):
+        pos += self.n
+        self.segtree[pos] = value
+        while (pos > 1):
+            pos >>= 1
+            self.segtree[pos] = self.func([self.segtree[pos << 1], self.segtree[pos << 1 | 1]])
+
+    def query(self, left, right):
         left += self.n
         right += self.n + 1
         res = 0 if (self.func == sum) else maxn if (self.func == min) else -maxn
@@ -571,13 +580,6 @@ class Segtree:
             left >>= 1
             right >>= 1
         return res
-
-    def update(self, pos, value):
-        pos += self.n
-        self.segtree[pos] = value
-        while (pos > 1):
-            pos >>= 1
-            self.segtree[pos] = self.func([self.segtree[pos << 1], self.segtree[pos << 1 | 1]])
 endsnippet
 
 snippet UnionFind
@@ -631,6 +633,23 @@ class UnionFind:
 
     def __str__(self):
         return '\n'.join('{}: {}'.format(r, self.members(r)) for r in self.roots())
+endsnippet
+
+snippet z_algo
+def z_function(s):
+    n = len(s)
+    res = [0] * n
+    l = r = 0
+    for i in range(1, n):
+        z = res[i - l]
+        if i + z >= r:
+            z = max(r - i, 0)
+            while (i + z < n and s[z] == s[i + z]):
+                z += 1
+            l, r = i, i + z
+        res[i] = z
+    res[0] = n
+    return res
 endsnippet
 
 snippet tkinter
