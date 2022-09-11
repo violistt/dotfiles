@@ -32,6 +32,17 @@ snippet dict
 from collections import defaultdict
 endsnippet
 
+snippet Graph
+class Graph:
+    def __init__(self, vertices):
+        self.V = vertices
+        self.graph = defaultdict(list)
+  
+    def addEdge(self, u, v):
+        self.graph[u].append(v)
+endsnippet
+
+
 snippet dijkstra "Dijkstra"
 import heapq
 def dijkstra(start):
@@ -284,6 +295,20 @@ def nCr_mod(maxn = 2 * 10 ** 5, mod = 10 ** 9 + 7):
         return res
 
     return nCr_mod
+endsnippet
+
+snippet fast_mod_expo
+def pow(a, b, p):
+    res = 1
+    a %= p
+    if (a == 0):
+        return 0
+    while (b > 0):
+        if (b & 1):
+            res = (res * a) % p
+        b >>= 1
+        a = (a * a) % p
+    return res
 endsnippet
 
 snippet discrete_log
@@ -639,6 +664,89 @@ def z_function(s):
         res[i] = z
     res[0] = n
     return res
+endsnippet
+
+snippet tarjan
+def tarjan():
+    dfs_num = [None] * n
+    dfs_min = [n] * n
+    waiting = []
+    waits = [0] * n
+    sccp = []
+    dfs_time = 0
+    times_seen = [-1] * n
+    for start in range(n):
+        if (times_seen[start] == -1):
+            times_seen[start] = 0
+            to_visit = [start]
+            while (to_visit):
+                node = to_visit[-1]
+                if (times_seen[node] == 0):
+                    dfs_num[node] = dfs_time
+                    dfs_min[node] = dfs_time
+                    dfs_time += 1
+                    waiting.append(node)
+                    waits[node] = 1
+                children = graph[node]
+                if (times_seen[node] == len(children)):
+                    to_visit.pop()
+                    dfs_min[node] = dfs_num[node]
+                    for child in children:
+                        if (waits[child] and dfs_min[child] < dfs_min[node]):
+                            dfs_min[node] = dfs_min[child]
+                    if (dfs_min[node] == dfs_num[node]):
+                        component = []
+                        while (1):
+                            u = waiting.pop()
+                            waits[u] = 0
+                            component.append(u)
+                            if (u == node):
+                                break
+                        sccp.append(component)
+                else:
+                    child = children[times_seen[node]]
+                    times_seen[node] += 1
+                    if (times_seen[child] == -1):
+                        times_seen[child] = 0
+                        to_visit.append(child)
+    return sccp
+endsnippet
+
+snippet kosaraju
+def kosaraju_dfs(graph, nodes, order, sccp):
+    times_seen = [-1] * n
+    for start in nodes:
+        if (times_seen[start] == -1):
+            to_visit = [start]
+            times_seen[start] = 0
+            sccp.append([start])
+            while (to_visit):
+                node = to_visit[-1]
+                children = graph[node]
+                if (times_seen[node] == len(children)):
+                    to_visit.pop()
+                    order.append(node)
+                else:
+                    child = children[times_seen[node]]
+                    times_seen[node] += 1
+                    if (times_seen[child] == -1):
+                        times_seen[child] = 0
+                        to_visit.append(child)
+                        sccp[-1].append(child)
+
+def reverse(graph):
+    rev_graph = [[] for node in graph]
+    for node, _ in enumerate(graph):
+        for sus in graph[node]:
+            rev_graph[sus].append(node)
+    return rev_graph
+
+def kosaraju():
+    order = []
+    sccp = []
+    kosaraju_dfs(graph, range(n), order, [])
+    kosaraju_dfs(reverse(graph), order[::-1], [], sccp)
+    return sccp[::-1]
 endsnippet
 
 snippet tkinter
