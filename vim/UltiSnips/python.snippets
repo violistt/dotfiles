@@ -1,7 +1,14 @@
-snippet temp "Template"
+snippet temp_date
 #  author:  violist
 #  created: `date +%d.%m.%Y" "%R:%S`
 
+import sys
+input = sys.stdin.readline
+
+$0
+endsnippet
+
+snippet temp
 import sys
 input = sys.stdin.readline
 
@@ -73,15 +80,15 @@ path.reverse()
 endsnippet
 
 snippet bs "Binary_search"
-def binary_search(a, target):
+def binary_search(a, t):
     n = len(a)
     left = 0
     right = n - 1
     while (left <= right):
         mid = (left + right) >> 1
-        if (a[mid] == target):
+        if (a[mid] == t):
             return mid
-        if (a[mid] < target):
+        if (a[mid] < t):
             left = mid + 1
         else:
             right = mid - 1
@@ -89,14 +96,14 @@ def binary_search(a, target):
 endsnippet
 
 snippet	lower_bound "Binary_search_lower_bound"
-def lower_bound(a, target):
+def lower_bound(a, t):
     n = len(a)
     left = 0
     right = n - 1
     ans = -1
     while (left <= right):
         mid = (left + right) >> 1
-        if (a[mid] >= target):
+        if (a[mid] >= t):
             ans = mid
             right = mid - 1
         else:
@@ -105,14 +112,14 @@ def lower_bound(a, target):
 endsnippet
 
 snippet upper_bound "Binaray_search_upper_bound"
-def upper_bound(a, target):
+def upper_bound(a, t):
     n = len(a)
     left = 0
     right = n - 1
     ans = -1
     while (left <= right):
         mid = (left + right) >> 1
-        if (a[mid] > target):
+        if (a[mid] > t):
             ans = mid
             right = mid - 1
         else:
@@ -149,17 +156,35 @@ endsnippet
 
 snippet dfs "Depth_first_search"
 def dfs(start):
-    visited[start] = True
+    visited = [0] * len(g)
+    visited[start] = 1
     to_visit = [start]
     while (to_visit):
         node = to_visit.pop()
-        for neighbour in graph[node]:
-            if (not visited[neighbor]):
-                visited[neighbor] = True
-                to_visit.append(neighbor)
+        for sus in graph[node]:
+            if (not visited[sus]):
+                visited[sus] = 1
+                to_visit.append(sus)
 endsnippet
 
-snippet connected_components
+snippet connected_components_iterative
+def dfs():
+    n = len(g)
+    visited = [0] * len(g)
+    k = 0
+    for start in range(len(g)):
+        if (not visited[start]):
+            k += 1
+            stack = [start]
+            while (stack):
+                n = stack.pop()
+                if (not visited[n]):
+                    visited[n] = 1
+                    stack.extend(g[n])
+    return k
+endsnippet
+
+snippet connected_components_recursive
 def dfs1():
     visited = [0 for i in range(n)]
     cnt = 0
@@ -575,9 +600,9 @@ snippet Segtree
 maxn = 1 << 64
 
 class Segtree:
-    def __init__(self, func, a, n):
+    def __init__(self, func, a):
         self.func = func
-        self.n = n
+        self.n = len(a)
         self.segtree = [0 for i in range(2 * self.n)]
         for i in range(self.n):
             self.segtree[self.n + i] = a[i]
