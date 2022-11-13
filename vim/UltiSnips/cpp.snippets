@@ -1,8 +1,21 @@
-snippet temp "Template"
+snippet temp_date "Template"
 /** 
  *    author:  violist
  *    created: `date +%d.%m.%Y" "%R:%S`
 **/
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(0);
+  $0
+  return 0;
+}
+endsnippet
+
+snippet temp "Template"
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -130,9 +143,13 @@ class segtree {
 };
 endsnippet
 
+snippet grid_movement
+const int dx[4] = {1, 0, 0, -1}, dy[4] = {0, 1, -1, 0};
+endsnippet
+
 snippet dijkstra
 vector<long long> dist(n, numeric_limits<long long>::max());
-vector<int> root(n, -1);
+vector<int> par(n, -1);
 priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> que;
 function<void(int)> Dijkstra = [&](int start) {
   dist[start] = 0;
@@ -147,7 +164,7 @@ function<void(int)> Dijkstra = [&](int start) {
     for (auto &[sus_n, sus_w] : g[n]) {
       if (w + sus_w < dist[sus_n]) {
         dist[sus_n] = w + sus_w;
-        root[sus_n] = n;
+        par[sus_n] = n;
         que.emplace(dist[sus_n], sus_n);
       }
     }
@@ -204,4 +221,29 @@ class dsu {
     }
   }
 };
+endsnippet
+
+snippet sort
+void sort(vector<int> &a, int l, int r) {
+  while (l < r) {
+    int i = l, j = l, k = r, b = a[l + rand() % (r - l)], tmp;
+    while (j < k) {
+      if (a[j] == b) {
+        j++;
+      } else if (a[j] < b) {
+        tmp = a[i], a[i] = a[j], a[j] = tmp;
+        i++, j++;
+      } else {
+        k--;
+        tmp = a[j], a[j] = a[k], a[k] = tmp;
+      }
+    }
+    sort(a, l, i);
+    l = k;
+  }
+}
+endsnippet
+
+snippet random
+srand(time(0));
 endsnippet
