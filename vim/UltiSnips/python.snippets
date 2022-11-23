@@ -49,9 +49,101 @@ class Graph:
         self.graph[u].append(v)
 endsnippet
 
-snippet grid_movement
+snippet is_bipartite
+# Graf je bipartitny, ak obsahuje cyklus s neparnou dlzkou
+def is_bipartite(graph):
+    n = len(graph)
+    color = [-1] * n
+    for start in range(n):
+        if (color[start] == -1):
+            color[start] = 0
+            stack = [start]
+            while (stack):
+                parent = stack.pop()
+                for child in graph[parent]:
+                    if (color[child] == -1):
+                        color[child] = 1 - color[parent]
+                        stack.append(child)
+                    elif (color[parent] == color[child]):
+                        return 0
+    return 1
+endsnippet
+
+snippet grid
 dx = [1, 0, 0, -1]
 dy = [0, 1, -1, 0]
+
+def valid(x, y):
+    if (0 <= x < r and 0 <= y < s): # Doplnit v pripade prekazok
+        return 1
+    return 0
+endsnippet
+
+snippet heap
+class OurHeap:
+    def __init__(self, items):
+        self.heap = [None]
+        self.rank = {}
+        for x in items:
+            self.push(x)
+
+    def __len__(self):
+        return len(self.heap) - 1
+
+    def push(self, x):
+        assert x not in self.rank
+        i = len(self.heap)
+        self.heap.append(x)
+        self.rank[x] = 1
+        self.up(i)
+
+    def pop(self):
+        root = self.heap[1]
+        del self.rank[root]
+        x = self.heap.pop()
+        if (self):
+            self.heap[1] = x
+            self.rank[x] = 1
+            self.down(1)
+        return root
+
+    def up(self, i):
+        x = self.heap[i]
+        while (i > 1 and x < self.heap[i // 2]):
+            self.heap[i] = self.heap[i // 2]
+            self.rank[self.heap[i // 2]] = i
+            i //= 2
+        self.heap[i] = x
+        self.rank[x] = i
+
+    def down(self, i):
+        x = self.heap[i]
+        n = len(self.heap)
+        while (1):
+            left = 2 * i
+            right = left + 1
+            if (right < n and self.heap[right] < x and self.heap[right] < self.heap[left]):
+                self.heap[i] = self.heap[right]
+                self.rank[self.heap[right]] = i
+                i = right
+            elif (left < n and self.heap[left] < x):
+                self.heap[i] = self.heap[left]
+                self.rank[self.heap[left]] = i
+                i = left
+            else:
+                self.heap[i] = x
+                self.rank[x] = i
+                return
+
+    def update(self, old, new):
+        i = self.rank[old]
+        del self.rank[old]
+        self.heap[i] = new
+        self.rank[new] = i
+        if (old < new):
+            self.down(i)
+        else:
+            self.up(i)
 endsnippet
 
 snippet dijkstra "Dijkstra"
@@ -225,6 +317,27 @@ def bfs(start):
                 dist[sus] = dist[n] + 1
                 visited[sus] = 1
     return dist
+endsnippet
+
+snippet bfs_grid
+def bfs(g, start):
+    visited = set()
+    visited.add(start)
+    queue = deque()
+    queue.append(start)
+    dist = defaultdict(lambda : -1)
+    dist[start] = 0
+    root = defaultdict(lambda : (0, 0))
+    while (queue):
+        x, y = queue.popleft()
+        for sus_x, sus_y in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]:
+            if ((sus_x, sus_y) in visited or not valid(sus_x, sus_y)):
+                continue
+            queue.append((sus_x, sus_y))
+            dist[(sus_x, sus_y)] = dist[(x, y)] + 1
+            root[(sus_x, sus_y)] = (x, y)
+            visited.add((sus_x, sus_y))
+    return dist, root
 endsnippet
 
 snippet is_prime "Primality_test"
