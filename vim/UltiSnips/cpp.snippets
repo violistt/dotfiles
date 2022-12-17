@@ -97,34 +97,37 @@ endsnippet
 
 snippet intervalac
 template <typename T>
-
+ 
 struct intervalac {
+  struct bound {
+    int lavy, pravy;
+  };
+ 
   int n, _n;
-  const long long DEFAULT = numeric_limits<T>::max(); // nezabudni zmenit
+  const T DEFAULT = 1e9 + 5; // nezabudni zmenit
+ 
   vector<T> strom;
-  vector<int> zaciatok, koniec;
-
+  vector<bound> okraj;
+ 
   intervalac(vector<int> &a) : _n(a.size()) {
-  n = 1
+    n = 1;
     while (n < _n) {
       n *= 2;
     }
-    n *= 2;
     strom.resize(2 * n, 0);
-    zaciatok.resize(2 * n);
-    koniec.resize(2 * n);
+    okraj.resize(2 * n);
     for (int i = 0; i < n; i++) {
       strom[i + n] = a[i];
-      zaciatok[i + n] = i;
-      koniec[i + n] = i + 1;
+      okraj[i + n].lavy = i;
+      okraj[i + n].pravy = i + 1;
     }
     for (int i = n - 1; i > 0; i--) {
       strom[i] = min(strom[2 * i], strom[2 * i + 1]);
-      zaciatok[i] = zaciatok[2 * i];
-      koniec[i] = koniec[2 * i + 1];
+      okraj[i].lavy = okraj[2 * i].lavy;
+      okraj[i].pravy = okraj[2 * i + 1].pravy;
     }
   }
-
+ 
   void update(int i, T h) {
     i += n;
     strom[i] = h;
@@ -132,11 +135,11 @@ struct intervalac {
       strom[predok] = min(strom[2 * predok], strom[2 * predok + 1]);
     }
   }
-
+ 
   T query(int l, int r, int v = 1) {
-    if (koniec[v] <= l || zaciatok[v] >= r)
+    if (okraj[v].pravy <= l || okraj[v].lavy >= r)
       return DEFAULT;
-    if (zaciatok[v] >= l && koniec[v] <= r)
+    if (okraj[v].lavy >= l && okraj[v].pravy <= r)
       return strom[v];
     return min(query(l, r, 2 * v), query(l, r, 2 * v + 1));
   }
@@ -197,7 +200,7 @@ template <typename T>
 int lis(const vector<T> &a) {
   vector<T> u;
   for (const T &x : a) {
-    auto it = upper_bound(u.begin(), u.end(), x);
+    auto it = lower_bound(u.begin(), u.end(), x);
     if (it == u.end()) {
       u.push_back(x);
     } else {
