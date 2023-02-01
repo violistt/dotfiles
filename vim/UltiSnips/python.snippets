@@ -69,6 +69,26 @@ def is_bipartite(graph):
     return 1
 endsnippet
 
+snippet toposort
+def toposort(g):
+    n = len(g)
+    vrcholy = [*range(n)]
+    predomnou = [0] * n
+    for v in vrcholy:
+        for sus in g[v]:
+            predomnou[sus] += 1
+    q = [v for v in vrcholy if (predomnou[v] == 0)]
+    poradie = []
+    while (q):
+        v = q.pop()
+        poradie.append(v)
+        for sus in g[v]:
+            predomnou[sus] -= 1
+            if (predomnou[sus] == 0):
+                q.append(sus)
+    return poradie[::-1]
+endsnippet
+
 snippet grid
 dx = [1, 0, 0, -1]
 dy = [0, 1, -1, 0]
@@ -155,14 +175,14 @@ def dijkstra(start):
     queue = []
     heapq.heappush(queue, (dist[start], start))
     while (queue):
-        w, n = heapq.heappop(queue)
-        if (dist[n] < w):
+        w, v = heapq.heappop(queue)
+        if (dist[v] < w):
             continue
-        for sus_n, sus_w in g[n]:
-            if (w + sus_w < dist[sus_n]):
-                dist[sus_n] = w + sus_w
-                root[sus_n] = n
-                heapq.heappush(queue, (dist[sus_n], sus_n))
+        for sus_v, sus_w in g[v]:
+            if (w + sus_w < dist[sus_v]):
+                dist[sus_v] = w + sus_w
+                root[sus_v] = v
+                heapq.heappush(queue, (dist[sus_v], sus_v))
     return dist, root
 endsnippet
 
@@ -310,11 +330,11 @@ def bfs(start):
     dist = [-1] * len(g)
     dist[start] = 0
     while (queue):
-        n = queue.popleft()
-        for sus in g[n]:
+        v = queue.popleft()
+        for sus in g[v]:
             if (not visited[sus]):
                 queue.append(sus)
-                dist[sus] = dist[n] + 1
+                dist[sus] = dist[v] + 1
                 visited[sus] = 1
     return dist
 endsnippet
@@ -709,7 +729,7 @@ def div(n):
     return d + large[::-1]
 endsnippet
 
-snippet fenwick
+snippet fin
 class Fenwick:
     def __init__(self, n):
         self.n = n
