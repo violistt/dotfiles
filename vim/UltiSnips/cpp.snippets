@@ -140,6 +140,23 @@ struct intervalac {
     int mid = (tl + tr) / 2;
     return merge(query(l, r, 2 * v, tl, mid), query(l, r, 2 * v + 1, mid, tr));
   }
+
+  T find_first(int h, int v = 1, int tl = 0, int tr = -1) {
+    tr = n;
+    if (strom[v] < h)
+      return -1;
+    while (tl < tr - 1) {
+      int mid = (tl + tr) / 2;
+      if (strom[2 * v] >= h) {
+        v *= 2;
+        tr = mid;
+      } else {
+        v = 2 * v + 1;
+        tl = mid;
+      }
+    }
+    return tl;
+  }
 };
 endsnippet
 
@@ -237,7 +254,7 @@ function<void(int)> Dijkstra = [&](int start) {
 };
 endsnippet
 
-snippet fenwick
+snippet fin
 template <typename T>
 class fenwick {
  public:
@@ -309,6 +326,81 @@ void sort(vector<int> &a, int l, int r) {
 }
 endsnippet
 
+snippet bfs
+vector<int> bfs(int start) {
+  int n = g.size();
+  vector<int> visited(n, 0);
+  visited[start] = 1;
+  queue<int> fronta;
+  fronta.push(start);
+  vector<int> dist(n, -1);
+  dist[start] = 0;
+  while (!fronta.empty()) {
+    int v = fronta.front();
+    fronta.pop();
+    for (auto &sus : g[v]) {
+      if (!visited[sus]) {
+        fronta.push(sus);
+        dist[sus] = dist[v] + 1;
+        visited[sus] = 1;
+      }
+    }
+  }
+  return dist;
+}
+endsnippet
+
 snippet random
 srand(time(0));
+endsnippet
+
+snippet int128
+template<class integer>
+
+inline integer to_int(const string& s, size_t* idx = 0, int base = 10) {
+  size_t n = s.size(), i = idx ? *idx : 0; bool sign = false; integer x = 0;
+  if (s[i] == '-')
+    ++i, sign = true;
+  function<int(char)> char_to_digit = [&](char c) {
+    static const int d[] = {'a' - 10, '0'};
+    return tolower(c) - d[isdigit(c)]; };
+  while (i < n)
+    x *= base, x += char_to_digit(s[i++]);
+  if (idx)
+    *idx = i;
+  return sign ? -x : x; }
+
+template<class integer>
+
+inline string to_string(integer x, int base = 10) {
+  bool sign = false; string s;
+  if (x < 0)
+    x = -x, sign = true;
+  function<char(int)> digit_to_char = [](int d) {
+    static const char c[] = {'a' - 10, '0'};
+    return c[d < 10] + d; };
+  do
+    s += digit_to_char(x % base), x /= base;
+  while (x > 0);
+  if (sign)
+    s += '-';
+  reverse(s.begin(),s.end());
+  return s; }
+
+template<class integer>
+
+inline istream& read(istream& is, integer& x) {
+  string s; is >> s, x = to_int<integer>(s); return is; }
+
+template<class integer>
+
+inline ostream& write(ostream& os, integer x) { return os << to_string(x); }
+
+using lll = signed __int128;
+using ulll = unsigned __int128;
+
+inline istream& operator>>(istream& is,  lll &x) { return  read(is,x); }
+inline istream& operator>>(istream& is, ulll &x) { return  read(is,x); }
+inline ostream& operator<<(ostream& os,  lll  x) { return write(os,x); }
+inline ostream& operator<<(ostream& os, ulll  x) { return write(os,x); }
 endsnippet
