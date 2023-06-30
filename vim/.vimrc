@@ -6,9 +6,6 @@
 "
 set rnu
 set mouse=a
-if $TERM == 'alacritty'
-  set ttymouse=sgr
-endif
 syntax on
 set autoindent
 set tabstop=2
@@ -21,6 +18,7 @@ set nobackup
 set noundofile
 set encoding=utf-8
 filetype plugin on
+filetype plugin indent on
 nmap <F9> <Esc>:w<CR>:!clear;python3 %<CR>
 autocmd vimEnter *.cpp map <F8> :w <CR> :!clear ; g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
 "autocmd vimEnter *.cpp map <F8> :w <CR> :vertical terminal ++shell ++cols=40 g++ --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
@@ -35,5 +33,9 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
 call plug#end()
+
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
 
 let g:airline_powerline_fonts = 1
